@@ -1,0 +1,14 @@
+import mongoose, { Schema } from "mongoose";
+
+const JobSchema = new Schema(
+  {
+    title: String,
+    company: String,
+    status: String,
+    location: String,
+    link: String,
+  },
+  { timestamps: true }
+);
+
+export default mongoose.models.Job || mongoose.model("Job", JobSchema);
