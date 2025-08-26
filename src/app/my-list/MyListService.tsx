@@ -1,8 +1,8 @@
 import axios from "axios";
-import { newJob } from "../add-job/AddJobService";
+import { AddJob } from "../add-job/AddJobService";
 
 export async function fetchJobs() {
-  const response = await axios.get<newJob[]>("/api/jobs");
+  const response = await axios.get<AddJob[]>("/api/jobs");
   return response.data;
 }
 

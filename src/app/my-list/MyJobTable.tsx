@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { newJob } from "../add-job/AddJobService";
+import { AddJob } from "../add-job/AddJobService";
 import { fetchJobs } from "./MyListService";
 import { columns } from "./Columns";
 import { DataTable } from "@/components/ui/data-table";
@@ -11,7 +11,7 @@ export default function MyJobTable() {
     data: jobs = [],
     isLoading,
     error,
-  } = useQuery<newJob[]>({
+  } = useQuery<AddJob[]>({
     queryKey: ["jobs"],
     queryFn: fetchJobs,
   });

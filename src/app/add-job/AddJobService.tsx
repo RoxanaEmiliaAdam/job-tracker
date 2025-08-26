@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export interface newJob {
+export interface AddJob {
   _id?: string;
   title: string;
   company: string;
@@ -8,6 +8,6 @@ export interface newJob {
   status: string;
 }
 
-export const addJob = (newJob: newJob) => {
+export const addJob = (newJob: AddJob) => {
   return axios.post("api/jobs", newJob);
 };

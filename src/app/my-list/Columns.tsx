@@ -1,31 +1,30 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { newJob } from "../add-job/AddJobService";
+import { AddJob } from "../add-job/AddJobService";
 import JobActions from "./JobActions";
+import { TableHeader } from "./TableHeader";
 
-const headerClass = "font-bold text-gray-800 text-sm uppercase";
-
-export const columns: ColumnDef<newJob>[] = [
+export const columns: ColumnDef<AddJob>[] = [
   {
     accessorKey: "title",
-    header: () => <span className={headerClass}>Job Title</span>,
+    header: () => <TableHeader>Job Title</TableHeader>,
   },
   {
     accessorKey: "company",
-    header: () => <span className={headerClass}>Company</span>,
+    header: () => <TableHeader>Company</TableHeader>,
   },
   {
     accessorKey: "location",
-    header: () => <span className={headerClass}>Location</span>,
+    header: () => <TableHeader>Location</TableHeader>,
   },
   {
     accessorKey: "status",
-    header: () => <span className={headerClass}>Status</span>,
+    header: () => <TableHeader>Status</TableHeader>,
   },
   {
     id: "actions",
-    header: () => <span className={headerClass}>Actions</span>,
+    header: () => <TableHeader>Actions</TableHeader>,
     cell: ({ row }) => <JobActions job={row.original} />,
   },
 ];

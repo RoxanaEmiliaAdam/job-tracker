@@ -1,12 +1,12 @@
 "use client";
 
-import { newJob } from "../add-job/AddJobService";
+import { AddJob } from "../add-job/AddJobService";
 import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteJob } from "./MyListService";
 import { ConfirmDialogBox } from "../app_components/ConfirmDialogBox";
 
-export default function JobActions({ job }: { job: newJob }) {
+export default function JobActions({ job }: { job: AddJob }) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
