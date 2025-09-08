@@ -1,0 +1,146 @@
+"use client";
+
+import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { useEffect } from "react";
+
+export type JobFormValues = {
+  title: string;
+  company: string;
+  location: string;
+  status: string;
+};
+
+type JobFormProps = {
+  initialValues?: {
+    title: string;
+    company: string;
+    location: string;
+    status: string;
+  };
+  onSubmit: (values: {
+    title: string;
+    company: string;
+    location: string;
+    status: string;
+  }) => void;
+  submitLabel?: string;
+  successMessage?: string | null;
+  isSubmitting?: boolean;
+};
+
+export default function JobForm({
+  initialValues,
+  onSubmit,
+  submitLabel = "Save Job",
+  successMessage,
+}: JobFormProps) {
+  const [formData, setFormData] = useState({
+    title: "",
+    company: "",
+    location: "",
+    status: "",
+  });
+
+  useEffect(() => {
+    if (initialValues) {
+      setFormData(initialValues);
+    }
+  }, [initialValues]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (
+      !formData.title ||
+      !formData.company ||
+      !formData.location ||
+      !formData.status
+    ) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    onSubmit(formData);
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen px-4">
+      <Card className="w-full max-w-md shadow-xl p-6">
+        <CardContent>
+          <h2 className="text-xl font-semibold mb-6 text-center text-blue-900">
+            {submitLabel.includes("Update") ? "Edit Job" : "Add a New Job"}
+          </h2>
+
+          {successMessage && (
+            <div className="mb-4 text-green-600 text-sm font-medium text-center">
+              {successMessage}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="Job Title"
+              required
+              className="placeholder:text-neutral-500 placeholder:italic"
+            />
+            <Input
+              name="company"
+              value={formData.company}
+              onChange={handleChange}
+              placeholder="Company"
+              required
+              className="placeholder:text-neutral-500 placeholder:italic"
+            />
+            <Input
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              placeholder="Location"
+              required
+              className="placeholder:text-neutral-500 placeholder:italic"
+            />
+            <Select
+              value={formData.status}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, status: value }))
+              }
+              required
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select Status" />
+              </SelectTrigger>
+              <SelectContent className="bg-white">
+                <SelectItem value="Pending">Applied</SelectItem>
+                <SelectItem value="Interview">Interview</SelectItem>
+                <SelectItem value="Offer">Offer</SelectItem>
+                <SelectItem value="Rejected">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              type="submit"
+              className="w-full bg-blue-900 hover:bg-blue-700 font-bold text-white"
+            >
+              {submitLabel}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

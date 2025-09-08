@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteJob } from "./MyListService";
 import { ConfirmDialogBox } from "../app_components/ConfirmDialogBox";
+import Link from "next/link";
 
 export default function JobActions({ job }: { job: AddJob }) {
   const queryClient = useQueryClient();
@@ -16,8 +17,6 @@ export default function JobActions({ job }: { job: AddJob }) {
     },
   });
 
-  const handleEdit = () => {};
-
   const handleDelete = () => {
     if (job._id) {
       mutation.mutate(job._id);
@@ -26,13 +25,15 @@ export default function JobActions({ job }: { job: AddJob }) {
 
   return (
     <div className="flex gap-2">
+      {/* Edit Button with Link */}
       <Button
+        asChild
         variant="outline"
         className="hover:bg-blue-50 border-blue-800"
-        onClick={handleEdit}
       >
-        Edit
+        <Link href={`/edit-job/${job._id}`}>Edit</Link>
       </Button>
+
       <ConfirmDialogBox
         title="Delete Job"
         description="Are you sure you want to delete this job? This action cannot be undone."
