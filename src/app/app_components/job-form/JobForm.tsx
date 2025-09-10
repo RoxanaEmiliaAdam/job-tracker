@@ -11,7 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { useEffect } from "react";
 
 export type JobFormValues = {
   title: string;
@@ -21,18 +20,8 @@ export type JobFormValues = {
 };
 
 type JobFormProps = {
-  initialValues?: {
-    title: string;
-    company: string;
-    location: string;
-    status: string;
-  };
-  onSubmit: (values: {
-    title: string;
-    company: string;
-    location: string;
-    status: string;
-  }) => void;
+  initialValues?: JobFormValues;
+  onSubmit: (values: JobFormValues) => void;
   submitLabel?: string;
   successMessage?: string | null;
   isSubmitting?: boolean;
@@ -44,18 +33,12 @@ export default function JobForm({
   submitLabel = "Save Job",
   successMessage,
 }: JobFormProps) {
-  const [formData, setFormData] = useState({
-    title: "",
-    company: "",
-    location: "",
-    status: "",
+  const [formData, setFormData] = useState<JobFormValues>({
+    title: initialValues?.title ?? "",
+    company: initialValues?.company ?? "",
+    location: initialValues?.location ?? "",
+    status: initialValues?.status ?? "",
   });
-
-  useEffect(() => {
-    if (initialValues) {
-      setFormData(initialValues);
-    }
-  }, [initialValues]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
