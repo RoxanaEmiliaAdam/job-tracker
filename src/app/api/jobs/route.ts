@@ -2,30 +2,36 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Job from "@/models/Job";
 import { FilterQuery, SortOrder } from "mongoose";
+import { FetchJobsParams } from "@/lib/types/fetchJobs";
 
 export async function GET(req: NextRequest) {
   await connectToDatabase();
 
   const url = new URL(req.url);
-  const search = url.searchParams.get("search") || "";
-  const status = url.searchParams.get("status") || "";
-  const sort = url.searchParams.get("sort") || "";
-  const order = url.searchParams.get("order") || "asc";
 
-  // build query object using FilterQuery<Job>
+  // extract params
+  const params: FetchJobsParams = {
+    search: url.searchParams.get("search") ?? "",
+    status: url.searchParams.get("status") ?? "",
+    sortBy: url.searchParams.get("sortBy") ?? "",
+    sortOrder: (url.searchParams.get("sortOrder") as "asc" | "desc") ?? "asc",
+  };
+
+  // build query object using FilterQuery<Job>; add filters dinamically
   const query: FilterQuery<typeof Job> = {};
-  if (status) query.status = status;
-  if (search) {
+  if (params.status) query.status = params.status;
+  if (params.search) {
     query.$or = [
-      { title: { $regex: search, $options: "i" } },
-      { company: { $regex: search, $options: "i" } },
-      { location: { $regex: search, $options: "i" } },
+      { title: { $regex: params.search, $options: "i" } },
+      { company: { $regex: params.search, $options: "i" } },
+      { location: { $regex: params.search, $options: "i" } },
     ];
   }
 
   // build sort object using Record<string, SortOrder>
   const sortObj: Record<string, SortOrder> = {};
-  if (sort) sortObj[sort] = order === "desc" ? -1 : 1;
+  if (params.sortBy)
+    sortObj[params.sortBy] = params.sortOrder === "desc" ? -1 : 1;
 
   try {
     const jobs = await Job.find(query).sort(sortObj); // no any needed
