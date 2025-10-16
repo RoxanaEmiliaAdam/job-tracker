@@ -1,8 +1,11 @@
 import axios from "axios";
 import { AddJob } from "../add-job/AddJobService";
+import { FetchJobsParams } from "@/lib/types/fetchJobs";
 
-export async function fetchJobs() {
-  const response = await axios.get<AddJob[]>("/api/jobs");
+export async function fetchJobs(
+  params: FetchJobsParams = {}
+): Promise<AddJob[]> {
+  const response = await axios.get("/api/jobs", { params });
   return response.data;
 }
 
