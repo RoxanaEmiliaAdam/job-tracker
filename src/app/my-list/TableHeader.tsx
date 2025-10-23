@@ -8,7 +8,7 @@ type TableHeaderProps = {
 
 export function TableHeader({ children }: TableHeaderProps) {
   return (
-    <span className="font-bold text-gray-800 text-sm uppercase">
+    <span className="font-bold text-gray-800 text-sm uppercase hover:bg-gray-50 cursor-pointer">
       {children}
     </span>
   );
