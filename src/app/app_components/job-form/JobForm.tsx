@@ -27,6 +27,8 @@ type JobFormProps = {
   isSubmitting?: boolean;
 };
 
+const selectOptions = ["Applied", "Interview", "Offer", "Rejected"];
+
 export default function JobForm({
   initialValues,
   onSubmit,
@@ -98,36 +100,26 @@ export default function JobForm({
               required
               className="placeholder:text-neutral-500 placeholder:italic hover:bg-blue-50 focus:bg-white transition"
             />
-            <Select>
+            <Select
+              value={formData.status}
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, status: value }))
+              }
+            >
               <SelectTrigger className="w-full border rounded-md px-3 py-2 hover:bg-blue-50 focus:ring-2 focus:ring-blue-200 transition">
                 <SelectValue placeholder="Select Status" />
               </SelectTrigger>
 
               <SelectContent className="bg-white shadow-md rounded-md">
-                <SelectItem
-                  value="Pending"
-                  className="hover:bg-blue-50 focus:bg-blue-50 cursor-pointer"
-                >
-                  Applied
-                </SelectItem>
-                <SelectItem
-                  value="Interview"
-                  className="hover:bg-blue-50 focus:bg-blue-50 cursor-pointer"
-                >
-                  Interview
-                </SelectItem>
-                <SelectItem
-                  value="Offer"
-                  className="hover:bg-blue-50 focus:bg-blue-50 cursor-pointer"
-                >
-                  Offer
-                </SelectItem>
-                <SelectItem
-                  value="Rejected"
-                  className="hover:bg-blue-50 focus:bg-blue-50 cursor-pointer"
-                >
-                  Rejected
-                </SelectItem>
+                {selectOptions.map((option) => (
+                  <SelectItem
+                    key={option}
+                    value={option}
+                    className="hover:bg-blue-50 focus:bg-blue-50 cursor-pointer"
+                  >
+                    {option}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Button

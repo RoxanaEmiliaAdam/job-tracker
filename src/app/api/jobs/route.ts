@@ -10,12 +10,18 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url);
 
   // extract params
-  const params: FetchJobsParams = {
+  const params: FetchJobsParams & { page?: number; pageSize?: number } = {
     search: url.searchParams.get("search") ?? "",
     status: url.searchParams.get("status") ?? "",
     sortBy: url.searchParams.get("sortBy") ?? "",
     sortOrder: (url.searchParams.get("sortOrder") as "asc" | "desc") ?? "asc",
+    page: parseInt(url.searchParams.get("page") ?? "1", 10),
+    pageSize: parseInt(url.searchParams.get("pageSize") ?? "5", 10),
   };
+
+  const page = params.page ?? 1;
+  const pageSize = params.pageSize ?? 5;
+  const skip = (page - 1) * pageSize;
 
   // build query object using FilterQuery<Job>; add filters dinamically
   const query: FilterQuery<typeof Job> = {};
@@ -34,8 +40,12 @@ export async function GET(req: NextRequest) {
     sortObj[params.sortBy] = params.sortOrder === "desc" ? -1 : 1;
 
   try {
-    const jobs = await Job.find(query).sort(sortObj); // no any needed
-    return NextResponse.json(jobs);
+    const [items, totalCount] = await Promise.all([
+      Job.find(query).sort(sortObj).skip(skip).limit(pageSize),
+      Job.countDocuments(query),
+    ]);
+
+    return NextResponse.json({ items, totalCount });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch jobs" },

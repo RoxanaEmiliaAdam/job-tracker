@@ -10,8 +10,16 @@ import { AddJob } from "../add-job/AddJobService";
 import { Button } from "@/components/ui/button";
 import JobActions from "./JobActions";
 import { PaginationControls } from "@/components/ui/PaginationControls";
-import { usePaginatedData } from "../hooks/usePaginationData";
-import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState } from "react";
+import { selectItemClasses } from "@/lib/styles/styles";
 
 export default function MyJobTable() {
   const router = useRouter();
@@ -31,26 +39,42 @@ export default function MyJobTable() {
     filters.sortBy !== "" ||
     filters.sortOrder !== "asc";
 
+  // Debounced search to reduce API calls - refetch after user types a search term
   const [debouncedSearch] = useDebounceValue(filters.search, 300);
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const pageSizeDesktop = 5;
+  const pageSizeMobile = 4;
 
   const updateFilter = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (value) params.set(key, value);
-    else params.delete(key);
+    if (["all", "none"].includes(value)) params.delete(key);
+    else params.set(key, value);
+
     router.replace(`?${params.toString()}`);
+    setPage(1); // reset to first page on filter change
   };
 
-  const {
-    data: jobs = [],
-    isLoading,
-    error,
-  } = useQuery<AddJob[]>({
+  // Determine pageSize based on window width
+  const isMobile =
+    typeof window !== "undefined" ? window.innerWidth < 768 : false;
+  const pageSize = isMobile ? pageSizeMobile : pageSizeDesktop;
+
+  // Fetch jobs from server
+  const { data, isLoading, error } = useQuery<
+    { items: AddJob[]; totalCount: number }, // TData
+    Error, // TError
+    { items: AddJob[]; totalCount: number } // TQueryFnData
+  >({
     queryKey: [
       "jobs",
       debouncedSearch,
       filters.status,
       filters.sortBy,
       filters.sortOrder,
+      page,
+      pageSize,
     ],
     queryFn: () =>
       fetchJobs({
@@ -58,31 +82,14 @@ export default function MyJobTable() {
         status: filters.status,
         sortBy: filters.sortBy,
         sortOrder: filters.sortOrder,
+        page,
+        pageSize,
       }),
   });
 
-  const resetDeps = [
-    debouncedSearch,
-    filters.status,
-    filters.sortBy,
-    filters.sortOrder,
-  ];
-
-  // Detect screen size
-  const [isMobile, setIsMobile] = useState<boolean>(
-    typeof window !== "undefined" ? window.innerWidth < 768 : false
-  );
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Use one pagination hook
-  const pageSize = isMobile ? 3 : 5;
-  const { paginatedData, pageIndex, setPageIndex, totalPages } =
-    usePaginatedData(jobs, pageSize, [...resetDeps, pageSize]);
+  const jobs = data?.items ?? [];
+  const totalCount = data?.totalCount ?? 0;
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   if (isLoading) return <p>Loading jobs...</p>;
   if (error) return <p>Error loading jobs.</p>;
@@ -90,89 +97,127 @@ export default function MyJobTable() {
   return (
     <div>
       {/* Filters */}
-      <div className="flex flex-wrap gap-2 mb-4 p-2 rounded-md bg-gray-50 transition">
-        <input
-          type="text"
+      <div className="flex flex-wrap md:flex-nowrap items-center gap-2 mb-4 p-2 rounded-md bg-gray-50">
+        <Input
           placeholder="Search jobs..."
           value={filters.search}
           onChange={(e) => updateFilter("search", e.target.value)}
-          className="border rounded px-2 py-1 hover:bg-blue-100 focus:bg-white transition flex-1 min-w-[140px]"
+          className="flex-grow min-w-[150px] max-w-full h-[3flex-grow min-w-[100px] max-w-full h-[38px] border rounded-md px-2 py-1 bg-white hover:bg-blue-50 focus:bg-blue-100 transition8px] "
         />
-        <select
-          value={filters.status}
-          onChange={(e) => updateFilter("status", e.target.value)}
-          className="border rounded px-2 py-1 hover:bg-blue-100 focus:bg-white transition"
+        <Select
+          value={filters.status || "all"}
+          onValueChange={(value) => updateFilter("status", value)}
         >
-          <option value="">All Status</option>
-          <option value="Pending">Pending</option>
-          <option value="Interview">Interview</option>
-          <option value="Offer">Offer</option>
-          <option value="Rejected">Rejected</option>
-          <option value="Applied">Applied</option>
-        </select>
-        <select
-          value={filters.sortBy}
-          onChange={(e) => updateFilter("sortBy", e.target.value)}
-          className="border rounded px-2 py-1 hover:bg-blue-100 focus:bg-white transition"
-        >
-          <option value="">Sort By</option>
-          <option value="title">Title</option>
-          <option value="company">Company</option>
-          <option value="status">Status</option>
-        </select>
-        <select
-          value={filters.sortOrder}
-          onChange={(e) =>
-            updateFilter("sortOrder", e.target.value as "asc" | "desc")
-          }
-          className="border rounded px-2 py-1 hover:bg-blue-100 focus:bg-white transition"
-        >
-          <option value="asc">Asc</option>
-          <option value="desc">Desc</option>
-        </select>
+          <SelectTrigger className="h-[38px] min-w-[90px] max-w-[120px] border rounded-md px-2 py-1 bg-white hover:bg-blue-50 focus:bg-blue-100 transition flex-shrink-0">
+            <SelectValue placeholder="All Status" />
+          </SelectTrigger>
+          <SelectContent className="bg-white shadow-md rounded-md">
+            <SelectItem value="all">All Status</SelectItem>
 
+            <SelectItem className={selectItemClasses} value="Interview">
+              Interview
+            </SelectItem>
+            <SelectItem className={selectItemClasses} value="Offer">
+              Offer
+            </SelectItem>
+            <SelectItem className={selectItemClasses} value="Rejected">
+              Rejected
+            </SelectItem>
+            <SelectItem className={selectItemClasses} value="Applied">
+              Applied
+            </SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* SortBy Select */}
+        <Select
+          value={filters.sortBy || ""}
+          onValueChange={(val) => updateFilter("sortBy", val)}
+        >
+          <SelectTrigger className="h-[38px] min-w-[90px] max-w-[120px] border rounded-md px-2 py-1 bg-white hover:bg-blue-50 focus:bg-blue-100 transition flex-shrink-0">
+            <SelectValue placeholder="Sort By" />
+          </SelectTrigger>
+          <SelectContent className="bg-white shadow-md rounded-md">
+            <SelectItem value="none" className={selectItemClasses}>
+              Sort By
+            </SelectItem>
+            <SelectItem value="title" className={selectItemClasses}>
+              Title
+            </SelectItem>
+            <SelectItem value="company" className={selectItemClasses}>
+              Company
+            </SelectItem>
+            <SelectItem value="status" className={selectItemClasses}>
+              Status
+            </SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* SortOrder Select */}
+        <Select
+          value={filters.sortOrder || "asc"}
+          onValueChange={(val) =>
+            updateFilter("sortOrder", val as "asc" | "desc")
+          }
+        >
+          <SelectTrigger className="h-[38px] min-w-[80px] max-w-[100px] border rounded-md px-2 py-1 bg-white hover:bg-blue-50 focus:bg-blue-100 transition flex-shrink-0">
+            <SelectValue placeholder="Asc/Desc" />
+          </SelectTrigger>
+          <SelectContent className="bg-white shadow-md rounded-md">
+            <SelectItem value="asc" className={selectItemClasses}>
+              Asc
+            </SelectItem>
+            <SelectItem value="desc" className={selectItemClasses}>
+              Desc
+            </SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* Clear Filters Button */}
         {isFiltered && (
           <Button
             onClick={() => router.replace("?")}
-            className="border rounded px-2 py-1 hover:bg-blue-100"
+            className="h-[38px] min-w-[70px] max-w-[100px] border rounded-md px-2 py-1 hover:bg-blue-100 flex-shrink-0"
           >
-            Clear Filters
+            Clear
           </Button>
         )}
       </div>
 
       {/* Render based on screen size */}
-      {isMobile ? (
-        <div className="space-y-2">
-          {paginatedData.map((job) => (
-            <div
-              key={job._id}
-              className="border rounded-lg p-3 shadow-sm bg-blue-50 hover:bg-blue-100 transition flex flex-col gap-1"
-            >
-              <div className="font-semibold text-lg">{job.title}</div>
-              <div className="text-sm text-gray-600">
-                Company: {job.company}
-              </div>
-              <div className="flex justify-between text-sm text-gray-500">
-                <span>Status: {job.status}</span>
-                <span>{job.location}</span>
-                <JobActions job={job} />
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="overflow-x-auto space-y-2">
-          <DataTable columns={columns} data={paginatedData} />
-        </div>
-      )}
-
-      <div className="p-4 border-t mt-4">
+      {/* Desktop Table */}
+      <div className="hidden md:block overflow-x-auto space-y-4">
+        <DataTable columns={columns} data={jobs} />
         {totalPages > 1 && (
           <PaginationControls
-            pageIndex={pageIndex}
+            pageIndex={page - 1}
             totalPages={totalPages}
-            onPageChange={setPageIndex}
+            onPageChange={(p) => setPage(p + 1)}
+          />
+        )}
+      </div>
+
+      {/* Mobile Cards */}
+      <div className="block md:hidden space-y-2">
+        {jobs.map((job) => (
+          <div
+            key={job._id}
+            className="border rounded-lg p-3 shadow-sm bg-blue-50 hover:bg-blue-100 transition flex flex-col gap-1"
+          >
+            <div className="font-semibold text-lg">{job.title}</div>
+            <div className="text-sm text-gray-600">Company: {job.company}</div>
+            <div className="flex justify-between text-sm text-gray-500">
+              <span>Status: {job.status}</span>
+              <span>{job.location}</span>
+              <JobActions job={job} />
+            </div>
+          </div>
+        ))}
+        {totalPages > 1 && (
+          <PaginationControls
+            pageIndex={page - 1}
+            totalPages={totalPages}
+            onPageChange={(p) => setPage(p + 1)}
           />
         )}
       </div>
