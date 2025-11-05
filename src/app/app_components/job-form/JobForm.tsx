@@ -27,6 +27,8 @@ type JobFormProps = {
   isSubmitting?: boolean;
 };
 
+const selectOptions = ["Applied", "Interview", "Offer", "Rejected"];
+
 export default function JobForm({
   initialValues,
   onSubmit,
@@ -80,7 +82,7 @@ export default function JobForm({
               onChange={handleChange}
               placeholder="Job Title"
               required
-              className="placeholder:text-neutral-500 placeholder:italic"
+              className="placeholder:text-neutral-500 placeholder:italic hover:bg-blue-50 focus:bg-white transition"
             />
             <Input
               name="company"
@@ -88,7 +90,7 @@ export default function JobForm({
               onChange={handleChange}
               placeholder="Company"
               required
-              className="placeholder:text-neutral-500 placeholder:italic"
+              className="placeholder:text-neutral-500 placeholder:italic hover:bg-blue-50 focus:bg-white transition"
             />
             <Input
               name="location"
@@ -96,23 +98,28 @@ export default function JobForm({
               onChange={handleChange}
               placeholder="Location"
               required
-              className="placeholder:text-neutral-500 placeholder:italic"
+              className="placeholder:text-neutral-500 placeholder:italic hover:bg-blue-50 focus:bg-white transition"
             />
             <Select
               value={formData.status}
               onValueChange={(value) =>
                 setFormData((prev) => ({ ...prev, status: value }))
               }
-              required
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full border rounded-md px-3 py-2 hover:bg-blue-50 focus:ring-2 focus:ring-blue-200 transition">
                 <SelectValue placeholder="Select Status" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
-                <SelectItem value="Pending">Applied</SelectItem>
-                <SelectItem value="Interview">Interview</SelectItem>
-                <SelectItem value="Offer">Offer</SelectItem>
-                <SelectItem value="Rejected">Rejected</SelectItem>
+
+              <SelectContent className="bg-white shadow-md rounded-md">
+                {selectOptions.map((option) => (
+                  <SelectItem
+                    key={option}
+                    value={option}
+                    className="hover:bg-blue-50 focus:bg-blue-50 cursor-pointer"
+                  >
+                    {option}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Button

@@ -3,8 +3,8 @@ import { AddJob } from "../add-job/AddJobService";
 import { FetchJobsParams } from "@/lib/types/fetchJobs";
 
 export async function fetchJobs(
-  params: FetchJobsParams = {}
-): Promise<AddJob[]> {
+  params: FetchJobsParams & { page?: number; pageSize?: number } = {}
+): Promise<{ items: AddJob[]; totalCount: number }> {
   const response = await axios.get("/api/jobs", { params });
   return response.data;
 }

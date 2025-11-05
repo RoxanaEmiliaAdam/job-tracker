@@ -15,14 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -37,20 +29,13 @@ export function DataTable<TData, TValue>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: {
-      pagination: {
-        pageIndex: 0,
-        pageSize: 5, // default rows per page
-      },
-    },
   });
 
   return (
     <div className="space-y-4">
       <div className="rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-gray-100 text-gray-700 font-semibold ">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -69,9 +54,12 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow
+                  key={row.id}
+                  className="hover:bg-gray-50 cursor-pointer border-b last:border-none "
+                >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell className="py-3 px-4 text-sm" key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -93,38 +81,6 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-
-      {/* Pagination Controls */}
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              onClick={() => table.previousPage()}
-              aria-disabled={!table.getCanPreviousPage()}
-              className={!table.getCanPreviousPage() ? "opacity-50" : ""}
-            />
-          </PaginationItem>
-
-          {table.getPageOptions().map((page) => (
-            <PaginationItem key={page}>
-              <PaginationLink
-                onClick={() => table.setPageIndex(page)}
-                isActive={table.getState().pagination.pageIndex === page}
-              >
-                {page + 1}
-              </PaginationLink>
-            </PaginationItem>
-          ))}
-
-          <PaginationItem>
-            <PaginationNext
-              onClick={() => table.nextPage()}
-              aria-disabled={!table.getCanNextPage()}
-              className={!table.getCanNextPage() ? "opacity-50" : ""}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
     </div>
   );
 }
