@@ -9,6 +9,12 @@ export async function fetchJobs(
   return response.data;
 }
 
+export async function fetchJobById(id: string) {
+  const res = await fetch(`/api/jobs/${id}`);
+  if (!res.ok) throw new Error("Failed to fetch job details");
+  return res.json();
+}
+
 export async function deleteJob(id: string) {
   try {
     const res = await axios.delete(`/api/jobs/${id}`);
