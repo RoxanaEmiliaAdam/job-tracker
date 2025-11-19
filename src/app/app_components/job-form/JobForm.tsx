@@ -11,6 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { JobTimeline } from "../JobTimeline";
+import { JobTimelineEntry } from "@/app/add-job/AddJobService";
 
 export type JobFormValues = {
   title: string;
@@ -25,6 +27,7 @@ type JobFormProps = {
   submitLabel?: string;
   successMessage?: string | null;
   isSubmitting?: boolean;
+  timeline?: JobTimelineEntry[];
 };
 
 const selectOptions = ["Applied", "Interview", "Offer", "Rejected"];
@@ -34,6 +37,7 @@ export default function JobForm({
   onSubmit,
   submitLabel = "Save Job",
   successMessage,
+  timeline,
 }: JobFormProps) {
   const [formData, setFormData] = useState<JobFormValues>({
     title: initialValues?.title ?? "",
@@ -122,6 +126,12 @@ export default function JobForm({
                 ))}
               </SelectContent>
             </Select>
+
+            <div className="mt-6">
+              <h2 className="text-lg font-semibold mb-2">Job Timeline</h2>
+              <JobTimeline timeline={timeline ?? []} />
+            </div>
+
             <Button
               type="submit"
               className="w-full bg-blue-900 hover:bg-blue-700 font-bold text-white"

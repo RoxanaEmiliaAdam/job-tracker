@@ -9,7 +9,7 @@ export async function fetchJobById(id: string) {
 
 // update a job
 
-export async function updateJob(id: string, jobData: AddJob) {
+export async function updateJob(id: string, jobData: Partial<AddJob>) {
   const res = await axios.put(`/api/jobs/${id}`, jobData);
   return res.data;
 }

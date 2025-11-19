@@ -4,7 +4,6 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -19,11 +18,13 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  onRowDoubleClick?: (rowData: TData) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  onRowDoubleClick,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -56,6 +57,7 @@ export function DataTable<TData, TValue>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
+                  onDoubleClick={() => onRowDoubleClick?.(row.original)}
                   className="hover:bg-gray-50 cursor-pointer border-b last:border-none "
                 >
                   {row.getVisibleCells().map((cell) => (

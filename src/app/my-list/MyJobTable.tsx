@@ -187,7 +187,11 @@ export default function MyJobTable() {
       {/* Render based on screen size */}
       {/* Desktop Table */}
       <div className="hidden md:block overflow-x-auto space-y-4">
-        <DataTable columns={columns} data={jobs} />
+        <DataTable
+          columns={columns}
+          data={jobs}
+          onRowDoubleClick={(job) => router.push(`/job-details/${job._id}`)}
+        />
         {totalPages > 1 && (
           <PaginationControls
             pageIndex={page - 1}

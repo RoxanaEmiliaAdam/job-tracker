@@ -54,11 +54,26 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// create a job
 export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
     const data = await req.json();
-    const newJob = await Job.create(data);
+    
+    // initialize timeline
+
+    const newJobData = {
+      ...data,
+      timeline: [
+        {
+          stage: "Created",
+          date: new Date().toISOString(),
+        },
+      ],
+    };
+
+    const newJob = await Job.create(newJobData);
+    
     return NextResponse.json(newJob, { status: 201 });
   } catch (error) {
     return NextResponse.json(

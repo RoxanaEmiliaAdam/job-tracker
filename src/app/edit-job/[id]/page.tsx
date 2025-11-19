@@ -24,24 +24,27 @@ export default function EditJobPage() {
   const mutation = useMutation({
     mutationFn: (updatedJob: JobFormValues) => updateJob(jobId, updatedJob),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["jobs"] });
-      router.push("/my-list"); // redirect to job list
+      queryClient.invalidateQueries({ queryKey: ["job", jobId] });
+      //router.push("/my-list"); // redirect to job list
     },
   });
 
   if (isLoading || !job) return <p>Loading job data...</p>;
 
   return (
-    <JobForm
-      initialValues={{
-        title: job.title,
-        company: job.company,
-        location: job.location,
-        status: job.status,
-      }}
-      onSubmit={(values) => mutation.mutate(values)}
-      submitLabel="Update Job"
-      isSubmitting={mutation.isPending}
-    />
+    <div>
+      <JobForm
+        initialValues={{
+          title: job.title,
+          company: job.company,
+          location: job.location,
+          status: job.status,
+        }}
+        onSubmit={(values) => mutation.mutate(values)}
+        submitLabel="Update Job"
+        isSubmitting={mutation.isPending}
+        timeline={job.timeline}
+      />
+    </div>
   );
 }

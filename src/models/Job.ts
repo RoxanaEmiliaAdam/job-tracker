@@ -7,6 +7,12 @@ const JobSchema = new Schema(
     status: String,
     location: String,
     link: String,
+    timeline: [
+      {
+        stage: String,
+        date: String,
+      },
+    ],
   },
   { timestamps: true }
 );
