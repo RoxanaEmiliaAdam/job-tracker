@@ -144,26 +144,30 @@ export default function JobForm({
               </SelectContent>
             </Select>
 
-            {/* Timeline */}
-            <div className="mt-6">
-              <h2 className="text-lg font-semibold mb-2">Job Timeline</h2>
-              <JobTimeline
-                timeline={timeline ?? []}
-                reminder={reminder}
-                onSaveReminder={onSaveReminder}
-                onRemoveReminder={onRemoveReminder}
-              />
-            </div>
+            {submitLabel.includes("Update") && (
+              <>
+                {/* Timeline */}
+                <div className="mt-6">
+                  <h2 className="text-lg font-semibold mb-2">Job Timeline</h2>
+                  <JobTimeline
+                    timeline={timeline ?? []}
+                    reminder={reminder}
+                    onSaveReminder={onSaveReminder}
+                    onRemoveReminder={onRemoveReminder}
+                  />
+                </div>
 
-            {/* Notes */}
+                {/* Notes */}
 
-            <Textarea
-              name="notes"
-              value={formData.notes}
-              onChange={handleNotesChange}
-              placeholder="Add notes about this job..."
-              className="min-h-[120px] placeholder:text-neutral-500 placeholder:italic"
-            />
+                <Textarea
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleNotesChange}
+                  placeholder="Add notes about this job..."
+                  className="min-h-[120px] placeholder:text-neutral-500 placeholder:italic"
+                />
+              </>
+            )}
 
             <Button
               type="submit"
