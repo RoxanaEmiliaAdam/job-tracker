@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { JobTimeline } from "../JobTimeline";
 import { JobTimelineEntry } from "@/app/add-job/AddJobService";
 
@@ -19,6 +20,7 @@ export type JobFormValues = {
   company: string;
   location: string;
   status: string;
+  notes: string;
 };
 
 type JobFormProps = {
@@ -28,6 +30,10 @@ type JobFormProps = {
   successMessage?: string | null;
   isSubmitting?: boolean;
   timeline?: JobTimelineEntry[];
+  notes?: string;
+  reminder?: { interviewDate?: string };
+  onSaveReminder?: (data: { interviewDate: string }) => void;
+  onRemoveReminder?: () => void;
 };
 
 const selectOptions = ["Applied", "Interview", "Offer", "Rejected"];
@@ -38,12 +44,16 @@ export default function JobForm({
   submitLabel = "Save Job",
   successMessage,
   timeline,
+  reminder,
+  onSaveReminder,
+  onRemoveReminder,
 }: JobFormProps) {
   const [formData, setFormData] = useState<JobFormValues>({
     title: initialValues?.title ?? "",
     company: initialValues?.company ?? "",
     location: initialValues?.location ?? "",
     status: initialValues?.status ?? "",
+    notes: initialValues?.notes ?? "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,6 +63,9 @@ export default function JobForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    console.log("Submitting formData:", formData);
+
     if (
       !formData.title ||
       !formData.company ||
@@ -63,6 +76,10 @@ export default function JobForm({
       return;
     }
     onSubmit(formData);
+  };
+
+  const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData((prev) => ({ ...prev, notes: e.target.value }));
   };
 
   return (
@@ -127,10 +144,26 @@ export default function JobForm({
               </SelectContent>
             </Select>
 
+            {/* Timeline */}
             <div className="mt-6">
               <h2 className="text-lg font-semibold mb-2">Job Timeline</h2>
-              <JobTimeline timeline={timeline ?? []} />
+              <JobTimeline
+                timeline={timeline ?? []}
+                reminder={reminder}
+                onSaveReminder={onSaveReminder}
+                onRemoveReminder={onRemoveReminder}
+              />
             </div>
+
+            {/* Notes */}
+
+            <Textarea
+              name="notes"
+              value={formData.notes}
+              onChange={handleNotesChange}
+              placeholder="Add notes about this job..."
+              className="min-h-[120px] placeholder:text-neutral-500 placeholder:italic"
+            />
 
             <Button
               type="submit"

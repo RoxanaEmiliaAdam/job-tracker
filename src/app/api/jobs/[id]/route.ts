@@ -56,6 +56,7 @@ export async function PUT(
 
   try {
     const body = await req.json();
+    console.log("PUT request body:", body);
     const existingJob = await Job.findById(id);
 
     if (!existingJob) {
@@ -73,12 +74,25 @@ export async function PUT(
       });
     }
 
+    // reminders
+    let updatedReminder = existingJob.reminder;
+    if (body.reminder === null) {
+      updatedReminder = null;
+    } else if (body.reminder) {
+      updatedReminder = {
+        ...(existingJob.reminder || {}),
+        ...(body.reminder || {}),
+      };
+    }
+
     // merge updates
     const updatedJob = await Job.findByIdAndUpdate(
       params.id,
       {
         ...body,
+        reminder: updatedReminder,
         timeline: updatedTimeLine,
+        notes: body.notes,
         updatedAt: new Date(),
       },
       { new: true, runValidators: true }

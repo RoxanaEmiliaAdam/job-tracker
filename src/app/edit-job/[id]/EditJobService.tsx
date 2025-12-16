@@ -13,3 +13,22 @@ export async function updateJob(id: string, jobData: Partial<AddJob>) {
   const res = await axios.put(`/api/jobs/${id}`, jobData);
   return res.data;
 }
+
+// save reminder
+export async function saveInterviewReminder(
+  jobId: string,
+  data: { interviewDate: string }
+) {
+  const res = await axios.put(`/api/jobs/${jobId}/reminder`, data);
+  return res.data;
+}
+
+// remove reminder
+export async function removeInterviewReminder(jobId: string) {
+  try {
+    const res = await axios.delete(`/api/jobs/${jobId}/reminder`);
+    return res.data;
+  } catch {
+    throw Error("Failed to delete job");
+  }
+}
