@@ -14,12 +14,14 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { ReactNode } from "react";
 
 type ConfirmDialogProps = {
-  children: ReactNode;
+  children?: ReactNode;
   title: string;
   description: string;
   confirmLabel: string;
   cancelLabel: string;
   onConfirm: () => void;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export function ConfirmDialogBox({
@@ -29,9 +31,11 @@ export function ConfirmDialogBox({
   confirmLabel = "Yes",
   cancelLabel = "Cancel",
   onConfirm,
+  isOpen,
+  onOpenChange,
 }: ConfirmDialogProps) {
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
       {/* button pressed in */}
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="bg-white">

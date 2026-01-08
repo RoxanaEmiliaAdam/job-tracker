@@ -13,6 +13,10 @@ const JobSchema = new Schema(
         date: String,
       },
     ],
+    notes: { type: String, default: "" },
+    reminder: {
+      interviewDate: { type: String, default: null },
+    },
   },
   { timestamps: true }
 );

@@ -14,6 +14,7 @@ export interface AddJob {
   createdAt: string;
   updatedAt?: string;
   timeline?: JobTimelineEntry[];
+  notes?: string;
 }
 
 // Add New Job

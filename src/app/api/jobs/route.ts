@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
     const data = await req.json();
-    
+
     // initialize timeline
 
     const newJobData = {
@@ -70,10 +70,11 @@ export async function POST(req: NextRequest) {
           date: new Date().toISOString(),
         },
       ],
+      notes: "",
     };
 
     const newJob = await Job.create(newJobData);
-    
+
     return NextResponse.json(newJob, { status: 201 });
   } catch (error) {
     return NextResponse.json(
