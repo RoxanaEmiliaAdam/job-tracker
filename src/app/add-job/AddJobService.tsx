@@ -16,7 +16,7 @@ export interface AddJob {
   timeline?: JobTimelineEntry[];
   notes?: string;
 
-  reminder?: { interviewDate?: string };
+  interviewDate?: string;
 }
 
 // Add New Job

@@ -9,7 +9,6 @@ type HeaderProps = {
 };
 
 const Header: React.FC<HeaderProps> = ({ job }) => {
-  console.log("header job", job);
   return (
     <header className="flex items-center justify-between px-2 py-2 shadow-md bg-white">
       {/* home button */}

@@ -57,7 +57,10 @@ export default function InterviewBanner({
   };
 
   const snooze3h = () => {
-    const snoozeUntil = new Date().getTime() + 3 * 60 * 60 * 1000;
+    //const snoozeUntil = new Date().getTime() + 3 * 60 * 60 * 1000;
+
+    // test 5 secs
+    const snoozeUntil = new Date().getTime() + 5 * 1000;
 
     sessionStorage.setItem(`snooze-interview-${jobId}`, snoozeUntil.toString());
     closeBanner();

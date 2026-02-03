@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import InterviewBanner from "./interviewReminder/InterviewBanner";
 import MyJobTable from "./MyJobTable";
 import { fetchJobs } from "./MyListService";
-import { getNextInterview } from "./interviewReminder/InterviewReminder";
+import { getNextInterviews } from "./interviewReminder/InterviewReminder";
 
 export default function MyListPage() {
   const { data: jobs } = useQuery({
@@ -13,7 +13,7 @@ export default function MyListPage() {
   });
 
   // Get all jobs with interviews within 48h
-  const upcomingInterviews = jobs?.items ? getNextInterview(jobs.items) : [];
+  const upcomingInterviews = jobs?.items ? getNextInterviews(jobs.items) : [];
 
   return (
     <main className="p-6">
@@ -23,7 +23,7 @@ export default function MyListPage() {
           jobId={job._id ?? ""}
           title={job.title}
           company={job.company}
-          interviewDate={job.reminder?.interviewDate}
+          interviewDate={job.interviewDate}
         />
       ))}
 
